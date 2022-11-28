@@ -22,15 +22,16 @@ public class Notificador extends Thread{
 
     private static volatile Notificador instance;
     private Map<String, List<iEventListener>> listeners = new HashMap<>();
-    private Socket socketCliente;
+    private Socket socketNotificacion;
     private BufferedReader entrada;
     public BufferedWriter salida;
+    private boolean estado;
     
     
     @Override
     public void run() {
-        boolean i = true;
-        while(i)
+        this.estado = true;
+        while(estado)
         {
             try
             {
@@ -38,10 +39,6 @@ public class Notificador extends Thread{
                 {
                     String eventType = entrada.readLine();
                     String contenido = entrada.readLine();
-                    if(!eventType.equalsIgnoreCase("NotificacionPublicacionRegistrada"))
-                    {
-                        i = false;
-                    }
                     notify(eventType, contenido);
                 }
             }
@@ -52,14 +49,21 @@ public class Notificador extends Thread{
         }
     }
     
-    
+    public boolean getEstado()
+    {
+        return this.estado;
+    }
 
-    public Notificador(Socket socketCliente, String... operations) {
-        this.socketCliente = socketCliente;
+    public void desactivar() {
+        this.estado = false;
+    }
+
+    public Notificador(Socket socketNotificacion, String... operations) {
+        this.socketNotificacion = socketNotificacion;
         try
         {
-            entrada = new BufferedReader(new InputStreamReader(this.socketCliente.getInputStream()));
-            salida = new BufferedWriter(new OutputStreamWriter(this.socketCliente.getOutputStream()));
+            entrada = new BufferedReader(new InputStreamReader(this.socketNotificacion.getInputStream()));
+            salida = new BufferedWriter(new OutputStreamWriter(this.socketNotificacion.getOutputStream()));
         }
         catch(Exception e)
         {
@@ -94,13 +98,13 @@ public class Notificador extends Thread{
         }
     }
     
-    public void setSocketCliente(Socket socketCliente)
+    public void setSocketNotificacion(Socket socketNotificacion)
     {
-        this.socketCliente = socketCliente;
+        this.socketNotificacion = socketNotificacion;
         try
         {
-            entrada = new BufferedReader(new InputStreamReader(this.socketCliente.getInputStream()));
-            salida = new BufferedWriter(new OutputStreamWriter(this.socketCliente.getOutputStream()));
+            entrada = new BufferedReader(new InputStreamReader(this.socketNotificacion.getInputStream()));
+            salida = new BufferedWriter(new OutputStreamWriter(this.socketNotificacion.getOutputStream()));
         }
         catch(Exception e)
         {
@@ -108,37 +112,6 @@ public class Notificador extends Thread{
         }
     }
     
-    public static Notificador getInstance() 
-    {
-        Notificador result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(Notificador.class) 
-        {
-            if(instance == null) 
-            {
-                instance = new Notificador("NotificacionUsuarioRegistrado", "NotificacionPublicacionRegistrada");
-            }
-        return instance;
-        }
-    }
     
-    public static Notificador getInstance(Socket socketCliente) 
-    {
-        Notificador result = instance;
-        if (result != null) {
-            result.setSocketCliente(socketCliente);
-            return result;
-        }
-        synchronized(Notificador.class) 
-        {
-            if(instance == null) 
-            {
-                instance = new Notificador(socketCliente, "NotificacionUsuarioRegistrado", "NotificacionPublicacionRegistrada");
-            }
-        return instance;
-        }
-    }
     
 }

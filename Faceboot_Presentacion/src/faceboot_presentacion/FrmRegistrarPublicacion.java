@@ -13,13 +13,23 @@ import javax.swing.JOptionPane;
  */
 public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEventListener{
 
+    private Conexion conexion;
+    private EventManagerNotificacionPublicacionRegistrado eventManagerNotificacionPublicacionRegistrado;
+    
     /**
      * Creates new form FrmRegistrarPublicacion
      */
-    public FrmRegistrarPublicacion() {
+    public FrmRegistrarPublicacion(Conexion conexion) {
         initComponents();
-        EventManagerNotificarPublicacionRegistrada.getInstance().subscribe("NotificacionPublicacionRegistrada", this);
-        Conexion.getInstance().notificador();
+        this.conexion = conexion;
+        this.conexion.iniciarNotificador();
+        this.eventManagerNotificacionPublicacionRegistrado = new EventManagerNotificacionPublicacionRegistrado(conexion, "notificarRegistroPublicacion");
+        this.eventManagerNotificacionPublicacionRegistrado.subscribe("notificarRegistroPublicacion", this);
+    }
+
+    private FrmRegistrarPublicacion() {
+        
+        System.out.println("no es");
     }
 
     @Override
@@ -93,7 +103,7 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
 
     private void btnPublicarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPublicarActionPerformed
         // TODO add your handling code here:
-        Conexion.getInstance().eventoPublicacion("registrarPublicacion", txtaContenido.getText());
+        this.conexion.eventoPublicacion("registrarPublicacion", txtaContenido.getText());
     }//GEN-LAST:event_btnPublicarActionPerformed
 
     /**

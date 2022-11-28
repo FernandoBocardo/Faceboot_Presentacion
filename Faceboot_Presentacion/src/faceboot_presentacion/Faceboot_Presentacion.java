@@ -15,11 +15,13 @@ public class Faceboot_Presentacion {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        new FrmRegistarUsuario().setVisible(true);
+        //new FrmRegistarUsuario().setVisible(true);
 
-        
+        Conexion conexion1 = new Conexion();
+        Conexion conexion2 = new Conexion();
 
-
+        new FrmRegistrarPublicacion(conexion1).setVisible(true);
+        new FrmRegistrarPublicacion(conexion2).setVisible(true);
 
     }
     

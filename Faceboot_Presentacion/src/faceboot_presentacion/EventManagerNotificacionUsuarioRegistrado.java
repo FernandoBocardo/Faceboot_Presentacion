@@ -14,16 +14,16 @@ import java.util.Map;
  *
  * @author Hiram
  */
-public class EventManagerRegistrarUsuario implements iEventListener{
+public class EventManagerNotificacionUsuarioRegistrado implements iEventListener{
     
-    private static volatile EventManagerRegistrarUsuario instance;
+    private static volatile EventManagerNotificacionUsuarioRegistrado instance;
     private Map<String, List<iEventListener>> listeners = new HashMap<>();
 
-    public EventManagerRegistrarUsuario(String... operations) {
+    public EventManagerNotificacionUsuarioRegistrado(Conexion conexion, String... operations) {
         for (String operation : operations) {
             this.listeners.put(operation, new ArrayList<>());
         }
-        Notificador.getInstance().subscribe("NotificacionUsuarioRegistrado", this);
+        conexion.getNotificador().subscribe("notificarRegistroUsuario", this);
     }
 
     public void subscribe(String eventType, iEventListener listener) {
@@ -43,21 +43,7 @@ public class EventManagerRegistrarUsuario implements iEventListener{
         }
     }
     
-    public static EventManagerRegistrarUsuario getInstance() 
-    {
-        EventManagerRegistrarUsuario result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(EventManagerRegistrarUsuario.class) 
-        {
-            if(instance == null) 
-            {
-                instance = new EventManagerRegistrarUsuario("NotificacionUsuarioRegistrado", "sesionIniciada");
-            }
-        return instance;
-        }
-    }
+    
 
     @Override
     public void update(String eventType, String contenido) {

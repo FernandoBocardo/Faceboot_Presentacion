@@ -13,15 +13,15 @@ import java.util.Map;
  *
  * @author Hiram
  */
-public class EventManagerNotificarPublicacionRegistrada implements iEventListener{
-    private static volatile EventManagerNotificarPublicacionRegistrada instance;
+public class EventManagerNotificacionPublicacionRegistrado implements iEventListener{
+    private static volatile EventManagerNotificacionPublicacionRegistrado instance;
     private Map<String, List<iEventListener>> listeners = new HashMap<>();
 
-    public EventManagerNotificarPublicacionRegistrada(String... operations) {
+    public EventManagerNotificacionPublicacionRegistrado(Conexion conexion, String... operations) {
         for (String operation : operations) {
             this.listeners.put(operation, new ArrayList<>());
         }
-        Notificador.getInstance().subscribe("NotificacionPublicacionRegistrada", this);
+        conexion.getNotificador().subscribe("notificarRegistroPublicacion", this);
     }
 
     public void subscribe(String eventType, iEventListener listener) {
@@ -41,21 +41,6 @@ public class EventManagerNotificarPublicacionRegistrada implements iEventListene
         }
     }
     
-    public static EventManagerNotificarPublicacionRegistrada getInstance() 
-    {
-        EventManagerNotificarPublicacionRegistrada result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(EventManagerNotificarPublicacionRegistrada.class) 
-        {
-            if(instance == null) 
-            {
-                instance = new EventManagerNotificarPublicacionRegistrada("NotificacionPublicacionRegistrada");
-            }
-        return instance;
-        }
-    }
     
     @Override
     public void update(String eventType, String contenido) {

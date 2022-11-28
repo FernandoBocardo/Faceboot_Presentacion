@@ -20,15 +20,19 @@ public class Conexion {
     private BufferedReader entrada;
     public BufferedWriter salida;
     private ObjectMapper objectMapper = new ObjectMapper();
-    public Socket sc;
+    public Socket socketCliente;
+    public Socket socketNotificacion;
+    private Notificador notificador;
     
     public Conexion()
     {
         try
         {
-            sc = new Socket(host, puerto);
-            entrada = new BufferedReader(new InputStreamReader(sc.getInputStream()));
-            salida = new BufferedWriter(new OutputStreamWriter(sc.getOutputStream()));
+            socketCliente = new Socket(host, puerto);
+            socketNotificacion = new Socket(host, puerto);
+            entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
+            salida = new BufferedWriter(new OutputStreamWriter(socketCliente.getOutputStream()));
+            notificador = new Notificador(socketNotificacion, "notificarRegistroUsuario", "notificarRegistroPublicacion");
         }
         catch(Exception e)
         {
@@ -37,19 +41,16 @@ public class Conexion {
         
     }
     
-    public static Conexion getInstance() 
+    public void desconectarSockets()
     {
-        Conexion result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(Conexion.class) 
+        try
         {
-            if(instance == null) 
-            {
-                instance = new Conexion();
-            }
-        return instance;
+            this.socketCliente.close();
+            this.socketNotificacion.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error: "+e.getMessage());
         }
     }
     
@@ -76,7 +77,6 @@ public class Conexion {
         {
             System.out.println("Error: "+e.getMessage());
         }
-        notificador();
     }
     
     public void eventoPublicacion(String eventType, String publicacion)
@@ -95,9 +95,22 @@ public class Conexion {
         }
     }
     
-    public void notificador()
+    public void iniciarNotificador()
     {
-        Notificador.getInstance(sc).start();
+        if(!notificador.getEstado())
+        {
+            notificador.start();
+        }
+    }
+    
+    public Notificador getNotificador()
+    {
+        return this.notificador;
+    }
+    
+    public void detenerNotificador()
+    {
+        notificador.desactivar();
     }
     
     

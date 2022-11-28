@@ -20,19 +20,22 @@ import javax.swing.JOptionPane;
 public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventListener{
 
     private Fachada fachada = new Fachada();
+    private Conexion conexion;
+    private EventManagerNotificacionUsuarioRegistrado eventManagerNotificacionUsuarioRegistrado;
     
     /**
      * Creates new form registarUsuario
      */
     public FrmRegistarUsuario() {
         initComponents();
-        EventManagerRegistrarUsuario.getInstance().subscribe("NotificacionUsuarioRegistrado", this);
     }
     
     @Override
     public void update(String eventType, String contenido) {
         JOptionPane.showMessageDialog(this, "El usuario se ha registrado correctamente", "Usuario registrado", JOptionPane.INFORMATION_MESSAGE);
-        EventManagerRegistrarUsuario.getInstance().unsubscribe("NotificacionUsuarioRegistrado", this);
+        eventManagerNotificacionUsuarioRegistrado.unsubscribe("notificarRegistroUsuario", this);
+        conexion.detenerNotificador();
+        conexion.desconectarSockets();
         new FrmIniciarSesion().setVisible(true);
         this.dispose();
     }
@@ -202,8 +205,11 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
     private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarseActionPerformed
         // Validaciones:
         Usuario usuario = new Usuario(txtNombre.getText(), txtTelefono.getText(), txtEmail.getText(), txtContraseña1.getText(), cbxSexo.getSelectedItem().toString());
-        Conexion.getInstance().eventoUsuario("registrarUsuario", usuario);
-        
+        conexion = new Conexion();
+        conexion.iniciarNotificador();
+        eventManagerNotificacionUsuarioRegistrado = new EventManagerNotificacionUsuarioRegistrado(conexion, "notificarRegistroUsuario");
+        eventManagerNotificacionUsuarioRegistrado.subscribe("notificarRegistroUsuario", this);
+        conexion.eventoUsuario("registrarUsuario", usuario);
     }//GEN-LAST:event_btnRegistrarseActionPerformed
 
     /**
