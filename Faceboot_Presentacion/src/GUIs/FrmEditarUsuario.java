@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package faceboot_presentacion;
+package GUIs;
 
 /**
  *
@@ -72,17 +72,17 @@ public class FrmEditarUsuario extends javax.swing.JFrame {
         jLabel8.setText("Fecha de nacimiento:");
         jLabel8.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
 
-        jLabel7.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
         jLabel7.setText("Nuevo nombre de usuario:");
+        jLabel7.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
 
-        jLabel9.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
         jLabel9.setText("Contraseña:");
+        jLabel9.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
 
-        jLabel10.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
         jLabel10.setText("Nueva contraseña:");
+        jLabel10.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
 
-        jLabel11.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
         jLabel11.setText("Confirmar nueva contraseña:");
+        jLabel11.setFont(new java.awt.Font("Century", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

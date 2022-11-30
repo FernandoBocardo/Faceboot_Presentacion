@@ -4,6 +4,8 @@
  */
 package faceboot_presentacion;
 
+import GUIs.FrmRegistrarPublicacion;
+
 /**
  *
  * @author Hiram

@@ -2,9 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package faceboot_presentacion;
+package GUIs;
 
 import Dominio.Usuario;
+import faceboot_presentacion.Conexion;
+import faceboot_presentacion.EventManagerNotificacionUsuarioRegistrado;
+import faceboot_presentacion.Fachada;
+import faceboot_presentacion.iEventListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
