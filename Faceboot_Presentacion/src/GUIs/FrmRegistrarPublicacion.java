@@ -4,11 +4,19 @@
  */
 package GUIs;
 
-import faceboot_presentacion.Conexion;
-import faceboot_presentacion.EventManagerNotificacionPublicacionRegistrado;
-import faceboot_presentacion.iEventListener;
+import Dominio.Usuario;
+import Dominio.UsuarioEtiquetado;
+import Negocios.PublicacionBuilder;
+import utils.Conexion;
+import eventManagers.EventManagerNotificacionPublicacionRegistrado;
+import java.io.File;
+import utils.iEventListener;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
 import javax.swing.JOptionPane;
+import utils.Controlador;
 
 /**
  *
@@ -18,26 +26,30 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
 
     private Conexion conexion;
     private EventManagerNotificacionPublicacionRegistrado eventManagerNotificacionPublicacionRegistrado;
+    private byte[] imagenSeleccionada;
+    private String usuario;
     
     /**
      * Creates new form FrmRegistrarPublicacion
      */
-    public FrmRegistrarPublicacion(Conexion conexion) {
+    public FrmRegistrarPublicacion(Conexion conexion, String usuario) {
         initComponents();
         this.conexion = conexion;
+        this.usuario = usuario;
         this.conexion.iniciarNotificador();
-        this.eventManagerNotificacionPublicacionRegistrado = new EventManagerNotificacionPublicacionRegistrado(conexion, "notificarRegistroPublicacion");
+        this.eventManagerNotificacionPublicacionRegistrado = EventManagerNotificacionPublicacionRegistrado.getInstance(conexion, "notificarRegistroPublicacion");
         this.eventManagerNotificacionPublicacionRegistrado.subscribe("notificarRegistroPublicacion", this);
     }
 
     private FrmRegistrarPublicacion() {
-        
-        System.out.println("no es");
     }
 
     @Override
-    public void update(String eventType, String contenido) {
-        this.txtaContenido.setText(contenido);
+    public void update(String eventType, String contenido, String usuarioJson) {
+        JOptionPane.showMessageDialog(this, "La publicación se ha registrado correctamente", "Publicacion registrada", JOptionPane.INFORMATION_MESSAGE);
+        eventManagerNotificacionPublicacionRegistrado.unsubscribe("notificarRegistroPublicacion", this);
+        new FrmMuro(conexion, this.usuario).setVisible(true);
+        this.dispose();
     }
     
     /**
@@ -53,10 +65,13 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
         jScrollPane1 = new javax.swing.JScrollPane();
         txtaContenido = new javax.swing.JTextArea();
         btnPublicar = new javax.swing.JButton();
+        btnSeleccionarImagen = new javax.swing.JButton();
+        lblImagenSeleccionada = new javax.swing.JLabel();
+        btnCancelar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Contenido");
+        jLabel1.setText("Mensaje de la publicacion:");
 
         txtaContenido.setColumns(20);
         txtaContenido.setRows(5);
@@ -69,24 +84,41 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
             }
         });
 
+        btnSeleccionarImagen.setText("Seleccionar");
+        btnSeleccionarImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarImagenActionPerformed(evt);
+            }
+        });
+
+        lblImagenSeleccionada.setText("Ningún archivo seleccionado (Máximo 5MB)");
+
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnSeleccionarImagen)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblImagenSeleccionada)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 182, Short.MAX_VALUE)
+                        .addComponent(btnCancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPublicar))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(157, 157, 157)
-                                .addComponent(btnPublicar)))
-                        .addGap(0, 165, Short.MAX_VALUE)))
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -95,19 +127,51 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
                 .addGap(29, 29, 29)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnPublicar)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPublicar)
+                    .addComponent(btnSeleccionarImagen)
+                    .addComponent(lblImagenSeleccionada)
+                    .addComponent(btnCancelar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPublicarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPublicarActionPerformed
-        // TODO add your handling code here:
-        this.conexion.eventoPublicacion("registrarPublicacion", txtaContenido.getText());
+        if(txtaContenido.getText().equals("") || txtaContenido == null)
+        {
+            JOptionPane.showMessageDialog(this, "Por introduzca un mensaje", 
+                    "Mensaje Vacio", 
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        else
+        {
+            PublicacionBuilder publicacionBuilder = new PublicacionBuilder();
+            publicacionBuilder.buildMensaje(txtaContenido.getText());
+            publicacionBuilder.buildImagen(imagenSeleccionada);
+            publicacionBuilder.buildEtiquetas(Controlador.getInstance().generarEtiquetas(txtaContenido.getText()));
+            publicacionBuilder.buildFechaHora(new GregorianCalendar());
+            publicacionBuilder.buildUsuariosEtiquetados(Controlador.getInstance().generarUsuariosEtiquetados(txtaContenido.getText()));
+            this.conexion.enviarEventoPublicaciones("registrarPublicacion", Controlador.getInstance().publicacionToJson(publicacionBuilder.getResultado()), usuario);
+        }
+        
     }//GEN-LAST:event_btnPublicarActionPerformed
+
+    private void btnSeleccionarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarImagenActionPerformed
+        File archivoImagenSeleccionada = Controlador.getInstance().elegirImagen(this);
+        String nombreImagen = Controlador.getInstance().recortarNombreImagen(archivoImagenSeleccionada.getName());
+        lblImagenSeleccionada.setText(nombreImagen);
+        imagenSeleccionada = Controlador.getInstance().imagenToByte(archivoImagenSeleccionada);
+    }//GEN-LAST:event_btnSeleccionarImagenActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        eventManagerNotificacionPublicacionRegistrado.unsubscribe("notificarRegistroPublicacion", this);
+        new FrmMuro(conexion, this.usuario).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,9 +209,12 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnPublicar;
+    private javax.swing.JButton btnSeleccionarImagen;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblImagenSeleccionada;
     private javax.swing.JTextArea txtaContenido;
     // End of variables declaration//GEN-END:variables
 }

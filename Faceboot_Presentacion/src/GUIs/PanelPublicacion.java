@@ -1,0 +1,286 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ */
+package GUIs;
+
+import Dominio.Comentario;
+import Dominio.Publicacion;
+import Dominio.Usuario;
+import Negocios.ComentarioBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eventManagers.EventManagerNotificacionComentarioRegistrado;
+import eventManagers.EventManagerNotificacionConsultarComentarios;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import utils.Conexion;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import org.apache.commons.io.FileUtils;
+import utils.Controlador;
+import utils.iEventListener;
+
+/**
+ *
+ * @author Fernando
+ */
+public class PanelPublicacion extends javax.swing.JPanel{
+
+    private Publicacion publicacion;
+    private String usuarioJson;
+    private Conexion conexion;
+    private Icon imagenPublicacion;
+    
+    /**
+     * Creates new form PanelPublicacion
+     */
+    public PanelPublicacion(Publicacion publicacion, String usuarioJson, Conexion conexion) {
+        initComponents();
+        this.btnVerImagen.setVisible(false);
+        this.publicacion = publicacion;
+        this.usuarioJson = usuarioJson;
+        this.conexion = conexion;
+        Usuario usuario = null;
+        try
+        {
+            ObjectMapper objectMapper = new ObjectMapper();
+            usuario = objectMapper.readValue(usuarioJson, Usuario.class);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        if(!usuario.getId().equals(publicacion.getUsuario().getId()))
+        {
+            this.btnEliminar.setVisible(false);
+        }
+        String rutaImagenUsuario = "C:\\Users\\Fernando\\Downloads\\fotos\\"+publicacion.getUsuario().getNombre();
+        if(publicacion.getUsuario().getFoto() != null)
+        {
+            try 
+            {
+                FileUtils.writeByteArrayToFile(new File(rutaImagenUsuario), publicacion.getUsuario().getFoto());
+                ImageIcon imagen = new ImageIcon(rutaImagenUsuario);
+                Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(74, 74, Image.SCALE_DEFAULT));
+                this.lblFotoUsuario.setIcon(icono);
+            } catch (IOException ex) 
+            {
+                Logger.getLogger(PanelPublicacion.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        String rutaImagenPublicacion = "C:\\Users\\Fernando\\Downloads\\fotos\\"+publicacion.getId();
+        if(publicacion.getImagen()!= null)
+        {
+            this.btnVerImagen.setVisible(true);
+            try 
+            {
+                FileUtils.writeByteArrayToFile(new File(rutaImagenPublicacion), publicacion.getImagen());
+                ImageIcon imagenPublicacionIcono = new ImageIcon(rutaImagenPublicacion);
+                this.imagenPublicacion = new ImageIcon(imagenPublicacionIcono.getImage().getScaledInstance(500, 500, Image.SCALE_DEFAULT));
+                
+            } catch (IOException ex) 
+            {
+                Logger.getLogger(PanelPublicacion.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        this.lblNombreUsuario.setText(publicacion.getUsuario().getNombre());
+        SimpleDateFormat fechaFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String fecha = fechaFormat.format(publicacion.getFechaHora().getTime());
+        this.lblFechaPublicacion.setText(fecha);
+        this.lblMensajePublicacion.setText(publicacion.getMensaje());
+        actualizarComentarios(publicacion.getComentarios());  
+    }
+
+    
+    public void actualizarComentarios(List<Comentario> comentarios) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Comentario> comentarios2 = new ArrayList<>();
+        int i = 0;
+        if(comentarios != null)
+        {
+            while(i < comentarios.size())
+            {
+                Comentario comentario = objectMapper.convertValue(comentarios.get(i), Comentario.class);
+                comentarios2.add(comentario);
+                i++;
+            }
+        }
+        comentariosPanel.removeAll();
+        ComentariosScrollPane comentariosScrollPane = new ComentariosScrollPane(conexion);
+        comentariosPanel.add(comentariosScrollPane.getComentarios(comentarios2, comentariosPanel, usuarioJson));
+        comentariosPanel.updateUI();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        lblNombreUsuario = new javax.swing.JLabel();
+        lblFechaPublicacion = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        lblMensajePublicacion = new javax.swing.JLabel();
+        btnEliminar = new javax.swing.JButton();
+        txtComentar = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        lblFotoUsuario = new javax.swing.JLabel();
+        comentariosPanel = new javax.swing.JPanel();
+        btnVerImagen = new javax.swing.JButton();
+
+        lblNombreUsuario.setText("nombreUsuario");
+
+        lblFechaPublicacion.setText("fecha");
+
+        lblMensajePublicacion.setText("mensajePublicacion");
+
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Comentar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        lblFotoUsuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconoPerfil.jpg"))); // NOI18N
+
+        comentariosPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        comentariosPanel.setLayout(new java.awt.BorderLayout());
+
+        btnVerImagen.setText("Ver Imagen");
+        btnVerImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerImagenActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator2)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblFotoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblFechaPublicacion)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblNombreUsuario)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 215, Short.MAX_VALUE)
+                                .addComponent(btnEliminar)
+                                .addGap(22, 22, 22))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnVerImagen)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblMensajePublicacion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comentariosPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtComentar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(lblFotoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblNombreUsuario)
+                            .addComponent(btnEliminar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblFechaPublicacion)))
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblMensajePublicacion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnVerImagen)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comentariosPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtComentar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap())
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+        String publicacionJson = Controlador.getInstance().publicacionToJson(this.publicacion);
+        conexion.enviarEventoPublicaciones("eliminarPublicacion", publicacionJson, usuarioJson);
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnVerImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerImagenActionPerformed
+        // TODO add your handling code here:
+        new FrmVerImagenPublicacion(imagenPublicacion).setVisible(true);
+    }//GEN-LAST:event_btnVerImagenActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(txtComentar.getText().equals("") || txtComentar == null)
+        {
+            JOptionPane.showMessageDialog(this, "Por introduzca un comentario", 
+                    "Comentario Vacio", 
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        else
+        {
+            ComentarioBuilder comentarioBuilder = new ComentarioBuilder();
+            comentarioBuilder.buildMensaje(txtComentar.getText());
+            comentarioBuilder.buildFechaHora(new GregorianCalendar());
+            comentarioBuilder.buildPublicacion(publicacion);
+            this.conexion.enviarEventoComentarios("registrarComentario", Controlador.getInstance().comentarioToJson(comentarioBuilder.getResultado()), usuarioJson);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnVerImagen;
+    private javax.swing.JPanel comentariosPanel;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel lblFechaPublicacion;
+    private javax.swing.JLabel lblFotoUsuario;
+    private javax.swing.JLabel lblMensajePublicacion;
+    private javax.swing.JLabel lblNombreUsuario;
+    private javax.swing.JTextField txtComentar;
+    // End of variables declaration//GEN-END:variables
+
+}

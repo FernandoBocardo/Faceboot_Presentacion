@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package faceboot_presentacion;
+package utils;
 
 import GUIs.FrmRegistrarPublicacion;
 
@@ -22,8 +22,6 @@ public class Faceboot_Presentacion {
         Conexion conexion1 = new Conexion();
         Conexion conexion2 = new Conexion();
 
-        new FrmRegistrarPublicacion(conexion1).setVisible(true);
-        new FrmRegistrarPublicacion(conexion2).setVisible(true);
 
     }
     

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package faceboot_presentacion;
+package utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -20,12 +21,12 @@ import java.util.Map;
  */
 public class Notificador extends Thread{
 
-    private static volatile Notificador instance;
     private Map<String, List<iEventListener>> listeners = new HashMap<>();
     private Socket socketNotificacion;
     private BufferedReader entrada;
     public BufferedWriter salida;
     private boolean estado;
+    private String usuarioJson;
     
     
     @Override
@@ -39,7 +40,11 @@ public class Notificador extends Thread{
                 {
                     String eventType = entrada.readLine();
                     String contenido = entrada.readLine();
-                    notify(eventType, contenido);
+                    if(!eventType.equals("notificarRegistroUsuario"))
+                    {
+                        usuarioJson = entrada.readLine();
+                    }
+                    notify(eventType, contenido, usuarioJson);
                 }
             }
             catch(Exception e)
@@ -91,10 +96,10 @@ public class Notificador extends Thread{
         users.remove(listener);
     }
 
-    public void notify(String eventType, String contenido) {
-        List<iEventListener> users = listeners.get(eventType);
+    public void notify(String eventType, String contenido, String usuarioJson) {
+        List<iEventListener> users = new CopyOnWriteArrayList(listeners.get(eventType));
         for (iEventListener listener : users) {
-            listener.update(eventType, contenido);
+            listener.update(eventType, contenido, usuarioJson);
         }
     }
     
