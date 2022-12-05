@@ -7,7 +7,15 @@ package GUIs;
 import Dominio.Comentario;
 import Dominio.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import org.apache.commons.io.FileUtils;
 import utils.Conexion;
 import utils.Controlador;
 
@@ -43,6 +51,20 @@ public class PanelComentario extends javax.swing.JPanel {
         {
             this.btnEliminar.setVisible(false);
         }
+        String rutaImagenUsuario = "C:\\Users\\Fernando\\Downloads\\fotos\\"+comentario.getUsuario().getNombre();
+        if(comentario.getUsuario().getFoto() != null)
+        {
+            try 
+            {
+                FileUtils.writeByteArrayToFile(new File(rutaImagenUsuario), comentario.getUsuario().getFoto());
+                ImageIcon imagen = new ImageIcon(rutaImagenUsuario);
+                Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(74, 74, Image.SCALE_DEFAULT));
+                this.lblFotoUsuario.setIcon(icono);
+            } catch (IOException ex) 
+            {
+                Logger.getLogger(PanelPublicacion.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         this.lblNombreUsuario.setText(comentario.getUsuario().getNombre());
         this.lblMensajeComentario.setText(comentario.getMensaje());
         SimpleDateFormat fechaFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -59,7 +81,7 @@ public class PanelComentario extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        lblFotoUsuario = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         lblNombreUsuario = new javax.swing.JLabel();
         lblFecha = new javax.swing.JLabel();
@@ -67,7 +89,7 @@ public class PanelComentario extends javax.swing.JPanel {
         jSeparator2 = new javax.swing.JSeparator();
         lblMensajeComentario = new javax.swing.JLabel();
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconoPerfil.jpg"))); // NOI18N
+        lblFotoUsuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconoPerfil.jpg"))); // NOI18N
 
         lblNombreUsuario.setText("nombreUsuario");
 
@@ -88,7 +110,7 @@ public class PanelComentario extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblFotoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator2)
@@ -110,7 +132,7 @@ public class PanelComentario extends javax.swing.JPanel {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFotoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -134,10 +156,10 @@ public class PanelComentario extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lblFecha;
+    private javax.swing.JLabel lblFotoUsuario;
     private javax.swing.JLabel lblMensajeComentario;
     private javax.swing.JLabel lblNombreUsuario;
     // End of variables declaration//GEN-END:variables
