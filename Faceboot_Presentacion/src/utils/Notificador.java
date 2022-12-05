@@ -6,6 +6,7 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -14,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -51,6 +54,13 @@ public class Notificador extends Thread{
             {
                 e.printStackTrace();
             }
+        }
+        try {
+            entrada.close();
+            salida.close();
+            socketNotificacion.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Notificador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

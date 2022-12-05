@@ -42,6 +42,8 @@ public class Conexion {
     {
         try
         {
+            this.entrada.close();
+            this.salida.close();
             this.socketCliente.close();
             this.socketNotificacion.close();
         }

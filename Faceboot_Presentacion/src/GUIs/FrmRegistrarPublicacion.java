@@ -28,6 +28,7 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
     private EventManagerNotificacionPublicacionRegistrado eventManagerNotificacionPublicacionRegistrado;
     private byte[] imagenSeleccionada;
     private String usuario;
+    private boolean cerrar = true;
     
     /**
      * Creates new form FrmRegistrarPublicacion
@@ -49,6 +50,7 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
         JOptionPane.showMessageDialog(this, "La publicación se ha registrado correctamente", "Publicacion registrada", JOptionPane.INFORMATION_MESSAGE);
         eventManagerNotificacionPublicacionRegistrado.unsubscribe("notificarRegistroPublicacion", this);
         new FrmMuro(conexion, this.usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }
     
@@ -70,6 +72,11 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
         btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setText("Mensaje de la publicacion:");
 
@@ -138,6 +145,7 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPublicarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPublicarActionPerformed
@@ -170,8 +178,18 @@ public class FrmRegistrarPublicacion extends javax.swing.JFrame implements iEven
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         eventManagerNotificacionPublicacionRegistrado.unsubscribe("notificarRegistroPublicacion", this);
         new FrmMuro(conexion, this.usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

@@ -102,6 +102,7 @@ public class FrmFiltroEtiqueta extends javax.swing.JFrame implements iEventListe
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**

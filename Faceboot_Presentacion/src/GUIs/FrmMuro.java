@@ -35,6 +35,7 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
     private String usuario;
     private EventManagerNotificacionPublicacionRegistrado eventManagerNotificacionPublicacionRegistrado;
     private EventManagerNotificacionConsultarPublicaciones eventManagerNotificacionConsultarPublicaciones;
+    private boolean cerrar = true;
     
     /**
      * Creates new form FrmMuro
@@ -242,24 +243,32 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
     private void btnNotificacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificacionesActionPerformed
         // TODO add your handling code here:
         new FrmNotificaciones(conexion, usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnNotificacionesActionPerformed
 
     private void btnEditarPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarPerfilActionPerformed
         // TODO add your handling code here:
         new FrmEditarUsuario(conexion, usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnEditarPerfilActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
-        System.out.println("Cerrado");
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
     }//GEN-LAST:event_formWindowClosed
 
     private void btnPublicarAlgoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPublicarAlgoActionPerformed
         this.eventManagerNotificacionPublicacionRegistrado.unsubscribe("notificarRegistroPublicacion", this);
         this.eventManagerNotificacionConsultarPublicaciones.unsubscribe("notificarConsultaPublicaciones", this);
         new FrmRegistrarPublicacion(conexion, usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnPublicarAlgoActionPerformed
 

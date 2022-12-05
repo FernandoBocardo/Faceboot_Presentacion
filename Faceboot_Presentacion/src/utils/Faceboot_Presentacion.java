@@ -4,7 +4,7 @@
  */
 package utils;
 
-import GUIs.FrmRegistrarPublicacion;
+import GUIs.FrmIniciarSesion;
 
 /**
  *
@@ -16,13 +16,8 @@ public class Faceboot_Presentacion {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        //new FrmRegistarUsuario().setVisible(true);
-
-        Conexion conexion1 = new Conexion();
-        Conexion conexion2 = new Conexion();
-
-
+        Conexion conexion = new Conexion();
+        new FrmIniciarSesion(conexion).setVisible(true);
     }
     
 }

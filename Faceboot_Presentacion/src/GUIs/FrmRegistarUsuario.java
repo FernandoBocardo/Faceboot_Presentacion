@@ -38,6 +38,7 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
     private Conexion conexion;
     private EventManagerNotificacionUsuarioRegistrado eventManagerNotificacionUsuarioRegistrado;
     private byte[] imagenSeleccionada;
+    private boolean cerrar = true;
     
     /**
      * Creates new form registarUsuario
@@ -59,6 +60,7 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
         JOptionPane.showMessageDialog(this, "El usuario se ha registrado correctamente", "Usuario registrado", JOptionPane.INFORMATION_MESSAGE);
         eventManagerNotificacionUsuarioRegistrado.unsubscribe("notificarRegistroUsuario", this);
         new FrmIniciarSesion(conexion).setVisible(true);
+        cerrar = false;
         this.dispose();
     }
 
@@ -103,6 +105,11 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registrar Usuario");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -271,6 +278,7 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.eventManagerNotificacionUsuarioRegistrado.unsubscribe("notificarRegistroUsuario", this);
         new FrmIniciarSesion(conexion).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
@@ -281,6 +289,15 @@ public class FrmRegistarUsuario extends javax.swing.JFrame implements iEventList
         lblArchivoSeleccionado.setText(nombreImagen);
         imagenSeleccionada = Controlador.getInstance().imagenToByte(archivoImagenSeleccionada);
     }//GEN-LAST:event_btnSeleccionarImagenActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

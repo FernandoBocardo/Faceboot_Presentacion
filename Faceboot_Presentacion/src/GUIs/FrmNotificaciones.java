@@ -23,6 +23,7 @@ public class FrmNotificaciones extends javax.swing.JFrame implements iEventListe
     private Conexion conexion;
     private String usuario;
     private EventManagerNotificacionConsultarMenciones eventManagerNotificacionConsultarMenciones;
+    private boolean cerrar = true;
     
     /**
      * Creates new form FrmNotificaciones
@@ -81,6 +82,11 @@ public class FrmNotificaciones extends javax.swing.JFrame implements iEventListe
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Notificaciones");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -157,8 +163,18 @@ public class FrmNotificaciones extends javax.swing.JFrame implements iEventListe
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         this.eventManagerNotificacionConsultarMenciones.unsubscribe("notificarConsultaMenciones", this);
         new FrmMuro(conexion, usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnRegresarActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

@@ -22,6 +22,7 @@ public class FrmIniciarSesion extends javax.swing.JFrame implements iEventListen
 
     private Conexion conexion;
     private EventManagerNotificacionInicioSesion eventManagerNotificacionSesionIniciada;
+    private boolean cerrar = true;
     
     /**
      * Creates new form registarUsuario
@@ -48,6 +49,7 @@ public class FrmIniciarSesion extends javax.swing.JFrame implements iEventListen
             this.eventManagerNotificacionSesionIniciada.unsubscribe("notificarSesionIniciada", this);
             this.eventManagerNotificacionSesionIniciada.unsubscribe("notificarSesionNoIniciada", this);
             new FrmMuro(conexion, usuarioJson).setVisible(true);
+            cerrar = false;
             this.dispose();
         }
         else
@@ -98,6 +100,11 @@ public class FrmIniciarSesion extends javax.swing.JFrame implements iEventListen
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Iniciar Sesión");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -245,8 +252,18 @@ public class FrmIniciarSesion extends javax.swing.JFrame implements iEventListen
         this.eventManagerNotificacionSesionIniciada.unsubscribe("notificarSesionIniciada", this);
         this.eventManagerNotificacionSesionIniciada.unsubscribe("notificarSesionNoIniciada", this);
         new FrmRegistarUsuario(conexion).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnRegistrarseActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

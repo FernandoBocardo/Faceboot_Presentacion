@@ -27,6 +27,7 @@ public class FrmEditarUsuario extends javax.swing.JFrame implements iEventListen
     private String usuario;
     private EventManagerNotificacionEdicionPerfil eventManagerNotificacionEdicionPerfil;
     private byte[] imagenSeleccionada;
+    private boolean cerrar = true;
     
     /**
      * Creates new form registarUsuario
@@ -48,6 +49,7 @@ public class FrmEditarUsuario extends javax.swing.JFrame implements iEventListen
         JOptionPane.showMessageDialog(this, "Se ha editado el perfil correctamente", "Perfil actualizado", JOptionPane.INFORMATION_MESSAGE);
         eventManagerNotificacionEdicionPerfil.unsubscribe("notificarEdicionPerfil", this);
         new FrmIniciarSesion(conexion).setVisible(true);
+        cerrar = false;
         this.dispose();
     }
 
@@ -85,6 +87,11 @@ public class FrmEditarUsuario extends javax.swing.JFrame implements iEventListen
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Editar Perfil");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -262,9 +269,19 @@ public class FrmEditarUsuario extends javax.swing.JFrame implements iEventListen
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.eventManagerNotificacionEdicionPerfil.unsubscribe("notificarEdicionPerfil", this);
-        new FrmIniciarSesion(conexion).setVisible(true);
+        new FrmMuro(conexion, usuario).setVisible(true);
+        cerrar = false;
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if(cerrar)
+        {
+            this.conexion.enviarEventoPublicaciones("desconectarse", "desconectarse", "desconectarse");
+            conexion.desconectarSockets();
+            conexion.detenerNotificador();
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
