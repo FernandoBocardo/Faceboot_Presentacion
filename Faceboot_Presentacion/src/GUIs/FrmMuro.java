@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import utils.Controlador;
 
 /**
  *
@@ -60,33 +61,7 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
     
     @Override
     public void update(String eventType, String contenido, String usuarioJson) {
-        List<Publicacion> publicaciones = null;
-        try
-        {
-            ObjectMapper objectMapper = new ObjectMapper();
-            publicaciones = objectMapper.readValue(contenido, ArrayList.class);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        actualizarMuro(publicaciones);
-    }
-    
-    public void actualizarMuro(List<Publicacion> publicaciones) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Publicacion> publicaciones2 = new ArrayList<>();
-        int i = 0;
-        while(i < publicaciones.size())
-        {
-            Publicacion publicacion = objectMapper.convertValue(publicaciones.get(i), Publicacion.class);
-            publicaciones2.add(publicacion);
-            i++;
-        }
-        panelMuro.removeAll();
-        MuroScrollPane muroScrollPane = new MuroScrollPane(conexion);
-        panelMuro.add(muroScrollPane.getMuro(publicaciones2, panelMuro, usuario));
-        panelMuro.updateUI();
+        Controlador.getInstance().mostrarMuro(contenido, panelMuro, conexion, usuario);
     }
     
     
@@ -109,7 +84,7 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
         btnEditarPerfil = new javax.swing.JButton();
         btnNotificaciones = new javax.swing.JButton();
         btnPublicarAlgo = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnCancelarFiltro = new javax.swing.JButton();
         panelMuro = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -165,10 +140,10 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
             }
         });
 
-        jButton1.setText("Cancelar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelarFiltro.setText("Cancelar");
+        btnCancelarFiltro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCancelarFiltroActionPerformed(evt);
             }
         });
 
@@ -188,7 +163,7 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnBuscarEtiqueta)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btnCancelarFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(43, 43, 43)
                 .addComponent(btnEditarPerfil)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -213,7 +188,7 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnPublicarAlgo)
-                            .addComponent(jButton1))))
+                            .addComponent(btnCancelarFiltro))))
                 .addContainerGap())
         );
 
@@ -280,9 +255,9 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
         }
     }//GEN-LAST:event_btnBuscarEtiquetaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCancelarFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarFiltroActionPerformed
         this.conexion.enviarEventoPublicaciones("consultarPublicaciones", this.usuario, this.usuario);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCancelarFiltroActionPerformed
 
     /**
      * @param args the command line arguments
@@ -322,10 +297,10 @@ public class FrmMuro extends javax.swing.JFrame implements iEventListener{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarEtiqueta;
+    private javax.swing.JButton btnCancelarFiltro;
     private javax.swing.JButton btnEditarPerfil;
     private javax.swing.JButton btnNotificaciones;
     private javax.swing.JButton btnPublicarAlgo;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

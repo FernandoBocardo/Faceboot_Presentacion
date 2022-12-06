@@ -41,11 +41,15 @@ public class MencionesScrollPane {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         );
-        List<Publicacion> publicacionesConMencion = usuarioEtiquetado.getPublicaciones();
-        for (Publicacion publicacion: publicacionesConMencion) 
+        if(usuarioEtiquetado != null)
         {
-            elementsPanel.add(getPanelForScroll(publicacion, usuario));
+            List<Publicacion> publicacionesConMencion = usuarioEtiquetado.getPublicaciones();
+            for (Publicacion publicacion: publicacionesConMencion) 
+            {
+                elementsPanel.add(getPanelForScroll(publicacion, usuario));
+            }
         }
+        
         return jPanel;
     }
 

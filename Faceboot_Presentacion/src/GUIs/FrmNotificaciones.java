@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import utils.Conexion;
+import utils.Controlador;
 import utils.iEventListener;
 
 /**
@@ -43,24 +44,7 @@ public class FrmNotificaciones extends javax.swing.JFrame implements iEventListe
     
     @Override
     public void update(String eventType, String contenido, String usuarioJson) {
-        UsuarioEtiquetado usuarioEtiquetado = null;
-        try
-        {
-            ObjectMapper objectMapper = new ObjectMapper();
-            usuarioEtiquetado = objectMapper.readValue(contenido, UsuarioEtiquetado.class);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        actualizarMenciones(usuarioEtiquetado);
-    }
-    
-    public void actualizarMenciones(UsuarioEtiquetado usuarioEtiquetado) {
-        panelMenciones.removeAll();
-        MencionesScrollPane mencionesScrollPane = new MencionesScrollPane(conexion);
-        panelMenciones.add(mencionesScrollPane.getMenciones(usuarioEtiquetado, panelMenciones, usuario));
-        panelMenciones.updateUI();
+        Controlador.getInstance().mostrarMenciones(contenido, panelMenciones, conexion, usuario);
     }
 
     /**

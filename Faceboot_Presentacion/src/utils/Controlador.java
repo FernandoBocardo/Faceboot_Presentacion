@@ -9,6 +9,8 @@ import Dominio.Etiqueta;
 import Dominio.Publicacion;
 import Dominio.Usuario;
 import Dominio.UsuarioEtiquetado;
+import GUIs.MencionesScrollPane;
+import GUIs.MuroScrollPane;
 import Negocios.CtrlUsuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -21,6 +23,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 
@@ -202,5 +205,48 @@ public class Controlador {
         return usuariosEtiquetados;
     }
 
+    public JPanel mostrarMuro(String contenido, JPanel panelMuro, Conexion conexion, String usuario)
+    {
+        List<Publicacion> publicaciones = null;
+        try
+        {
+            publicaciones = objectMapper.readValue(contenido, ArrayList.class);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        List<Publicacion> publicaciones2 = new ArrayList<>();
+        int i = 0;
+        while(i < publicaciones.size())
+        {
+            Publicacion publicacion = objectMapper.convertValue(publicaciones.get(i), Publicacion.class);
+            publicaciones2.add(publicacion);
+            i++;
+        }
+        panelMuro.removeAll();
+        MuroScrollPane muroScrollPane = new MuroScrollPane(conexion);
+        panelMuro.add(muroScrollPane.getMuro(publicaciones2, panelMuro, usuario));
+        panelMuro.updateUI();
+        return panelMuro;
+    }
+    
+    public JPanel mostrarMenciones(String contenido, JPanel panelMenciones, Conexion conexion, String usuario)
+    {
+        UsuarioEtiquetado usuarioEtiquetado = null;
+        try
+        {
+            usuarioEtiquetado = objectMapper.readValue(contenido, UsuarioEtiquetado.class);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        panelMenciones.removeAll();
+        MencionesScrollPane mencionesScrollPane = new MencionesScrollPane(conexion);
+        panelMenciones.add(mencionesScrollPane.getMenciones(usuarioEtiquetado, panelMenciones, usuario));
+        panelMenciones.updateUI();
+        return panelMenciones;
+    }
     
 }
